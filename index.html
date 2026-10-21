@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Robô Explorador</title>
+  <meta name="description" content="Jogo de plataforma de Ciências para o 1º, 2º e 3º ano do Ensino Fundamental.">
+  <link rel="stylesheet" href="css/estilo.css">
+</head>
+<body>
+  <!-- ============ TELA INICIAL ============ -->
+  <section id="tela-inicio" class="tela ativa">
+    <header class="cabecalho-inicio">
+      <img id="logo-robo" class="logo-robo" alt="">
+      <div>
+        <h1>Robô Explorador</h1>
+        <p class="lema">Explore a natureza e descubra as Ciências!</p>
+      </div>
+    </header>
+    <div id="aviso-perguntas" class="aviso-erro" role="alert" hidden></div>
+    <h2 class="subtitulo">Escolha o seu ano:</h2>
+    <div id="lista-anos" class="lista-anos"></div>
+    <div class="acoes">
+      <button class="btn secundario" data-abrir-ajuda>❓ Como jogar</button>
+      <button class="btn secundario btn-som">🔇 Som desligado</button>
+    </div>
+    <button id="btn-professor" class="btn-discreto">Área do professor</button>
+  </section>
+
+  <!-- ============ ESCOLHA DA FASE ============ -->
+  <section id="tela-mapa" class="tela">
+    <header class="barra">
+      <button class="btn secundario" id="mapa-voltar">⬅ Voltar</button>
+      <h2 id="mapa-titulo"></h2>
+      <button class="btn secundario" data-abrir-ajuda>❓ Como jogar</button>
+    </header>
+    <p class="instrucao-mapa">Escolha uma fase:</p>
+    <div id="lista-fases" class="lista-fases"></div>
+  </section>
+
+  <!-- ============ ANTES DA FASE: CONTROLES ============ -->
+  <section id="tela-prefase" class="tela">
+    <div class="cartao-prefase">
+      <p class="prefase-numero" id="prefase-numero"></p>
+      <h2 id="prefase-titulo"></h2>
+      <div class="prefase-missao">
+        <img id="prefase-item" class="prefase-item" alt="">
+        <p id="prefase-coletar"></p>
+      </div>
+
+      <div class="controles-desenho" aria-label="Controles do jogo">
+        <div class="controle">
+          <div class="teclas">
+            <span class="tecla">←</span>
+            <span class="tecla">→</span>
+          </div>
+          <p>Andar</p>
+        </div>
+        <div class="controle">
+          <div class="teclas">
+            <span class="tecla tecla-pulo">↑</span>
+            <span class="ou">ou</span>
+            <span class="tecla tecla-espaco tecla-pulo">espaço</span>
+          </div>
+          <p>Pular</p>
+        </div>
+      </div>
+
+      <div class="prefase-dicas">
+        <p><span class="dica-icone">🚩</span> Passe pela bandeira para salvar.</p>
+        <p><span class="dica-icone">❔</span> No fim, responda ao Portal da Pergunta.</p>
+      </div>
+
+      <div class="acoes">
+        <button class="btn secundario" id="prefase-voltar">⬅ Voltar</button>
+        <button class="btn principal grande" id="prefase-comecar">Começar ▶</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ JOGO ============ -->
+  <section id="tela-jogo" class="tela">
+    <header class="hud">
+      <div class="hud-titulo" id="hud-titulo"></div>
+      <div class="hud-itens" aria-live="polite">
+        <img id="hud-icone" class="hud-icone" alt="">
+        <span id="hud-contador" class="hud-contador"></span>
+        <span id="hud-meta" class="hud-meta"></span>
+      </div>
+      <button class="btn hud-pausa" id="btn-pausa" title="Pausar (tecla P)">⏸ Pausar</button>
+    </header>
+    <div class="area-canvas" id="area-canvas">
+      <canvas id="canvas" width="960" height="540" aria-label="Fase do jogo"></canvas>
+      <div id="aviso-jogo" class="aviso-jogo" role="status"></div>
+    </div>
+  </section>
+
+  <!-- ============ RESULTADO ============ -->
+  <section id="tela-resultado" class="tela">
+    <div class="cartao-resultado">
+      <h2 id="resultado-titulo">Fase completa!</h2>
+      <div class="resultado-estrelas" id="resultado-estrelas"></div>
+      <ul class="resultado-lista" id="resultado-lista"></ul>
+      <div class="acoes">
+        <button class="btn secundario" id="resultado-mapa">🗺️ Escolher fase</button>
+        <button class="btn secundario" id="resultado-repetir">↺ Jogar de novo</button>
+        <button class="btn principal" id="resultado-proxima">Próxima fase ➜</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PORTAL DA PERGUNTA ============ -->
+  <div class="modal" id="modal-quiz" hidden>
+    <div class="cartao cartao-quiz" role="dialog" aria-modal="true" aria-labelledby="quiz-pergunta">
+      <div class="quiz-topo">
+        <span class="quiz-selo">❔ Portal da Pergunta</span>
+        <span class="quiz-progresso" id="quiz-progresso"></span>
+      </div>
+      <div class="quiz-imagem" id="quiz-imagem" aria-hidden="true"></div>
+      <h2 class="quiz-pergunta" id="quiz-pergunta"></h2>
+      <div class="quiz-opcoes" id="quiz-opcoes"></div>
+
+      <div class="quiz-retorno" id="quiz-retorno" hidden>
+        <div class="retorno-titulo" id="retorno-titulo"></div>
+        <div class="retorno-imagem" id="retorno-imagem" aria-hidden="true"></div>
+        <p class="retorno-texto" id="retorno-texto"></p>
+        <button class="btn principal grande" id="retorno-botao"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ PAUSA ============ -->
+  <div class="modal" id="modal-pausa" hidden>
+    <div class="cartao" role="dialog" aria-modal="true" aria-labelledby="titulo-pausa">
+      <h2 id="titulo-pausa">⏸ Jogo pausado</h2>
+      <div class="lista-botoes">
+        <button class="btn principal grande" id="pausa-continuar">▶ Continuar</button>
+        <button class="btn secundario" data-abrir-ajuda>❓ Como jogar</button>
+        <button class="btn secundario" id="pausa-recomecar">↺ Recomeçar a fase</button>
+        <button class="btn secundario btn-som">🔇 Som desligado</button>
+        <button class="btn secundario" id="pausa-sair">🗺️ Escolher outra fase</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ COMO JOGAR ============ -->
+  <div class="modal" id="modal-ajuda" hidden>
+    <div class="cartao cartao-ajuda" role="dialog" aria-modal="true" aria-labelledby="titulo-ajuda">
+      <h2 id="titulo-ajuda">Como jogar</h2>
+      <ol class="passos">
+        <li>
+          <div class="passo-figura"><span class="tecla">←</span><span class="tecla">→</span></div>
+          <p>Use as <b>setas</b> para andar.</p>
+        </li>
+        <li>
+          <div class="passo-figura"><span class="tecla">↑</span><span class="tecla tecla-espaco">espaço</span></div>
+          <p>Aperte <b>↑</b> ou <b>espaço</b> para pular.</p>
+        </li>
+        <li>
+          <div class="passo-figura" id="ajuda-itens"></div>
+          <p>Pegue os <b>itens</b> pelo caminho.</p>
+        </li>
+        <li>
+          <div class="passo-figura figura-grande">🚩</div>
+          <p>Passe pela <b>bandeira</b>. Se cair num buraco, o robô volta para ela.</p>
+        </li>
+        <li>
+          <div class="passo-figura figura-grande">❔🖱️</div>
+          <p>No fim, o <b>Portal da Pergunta</b>: clique na resposta certa.</p>
+        </li>
+        <li>
+          <div class="passo-figura figura-grande">⭐⭐⭐</div>
+          <p>Ganhe <b>estrelas</b>: chegue ao fim, pegue muitos itens e acerte de primeira.</p>
+        </li>
+      </ol>
+      <button class="btn principal grande" id="ajuda-fechar">Entendi!</button>
+    </div>
+  </div>
+
+  <!-- ============ ÁREA DO PROFESSOR ============ -->
+  <div class="modal" id="modal-professor" hidden>
+    <div class="cartao cartao-professor" role="dialog" aria-modal="true" aria-labelledby="titulo-professor">
+      <h2 id="titulo-professor">Área do professor</h2>
+
+      <form id="professor-trava" class="professor-trava" autocomplete="off">
+        <label for="professor-resposta" id="professor-conta"></label>
+        <input id="professor-resposta" type="number" inputmode="numeric" min="0" max="99">
+        <p id="professor-erro" class="professor-erro" role="alert"></p>
+        <div class="acoes">
+          <button type="button" class="btn secundario" data-fechar-professor>Fechar</button>
+          <button type="submit" class="btn principal">Entrar</button>
+        </div>
+      </form>
+
+      <div id="professor-painel" hidden>
+        <div class="lista-botoes">
+          <button class="btn secundario" id="professor-liberar">🔓 Liberar todas as fases</button>
+          <button class="btn perigo" id="professor-apagar">🗑️ Apagar progresso</button>
+        </div>
+        <div id="professor-confirmar" class="confirmar" hidden>
+          <p><b>Tem certeza?</b> Isso apaga todas as estrelas e fases liberadas deste computador.</p>
+          <div class="acoes">
+            <button class="btn secundario" id="professor-confirmar-nao">Cancelar</button>
+            <button class="btn perigo" id="professor-confirmar-sim">Sim, apagar</button>
+          </div>
+        </div>
+        <p id="professor-mensagem" class="professor-mensagem" role="status"></p>
+        <details class="professor-perguntas">
+          <summary>Perguntas carregadas</summary>
+          <div id="professor-lista-perguntas"></div>
+        </details>
+        <p class="professor-nota">O progresso fica salvo somente neste navegador, neste computador.</p>
+        <div class="acoes">
+          <button class="btn secundario" data-fechar-professor>Fechar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="perguntas.js"></script>
+  <script src="js/fases.js"></script>
+  <script src="js/desenho.js"></script>
+  <script src="js/jogo.js"></script>
+</body>
+</html>
