@@ -177,7 +177,70 @@ h1 {
   gap: 16px;
 }
 .barra h2 { font-size: 40px; text-align: center; flex: 1; }
-.instrucao-mapa { font-size: 26px; font-weight: 700; margin: 18px 0 10px; }
+.instrucao-mapa { font-size: 26px; font-weight: 700; margin: 12px 0 10px; }
+
+/* ---------- Modo Desafio ---------- */
+.caixa-desafio {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin-top: 14px;
+}
+.botao-desafio { background: #eeeeee; }
+.botao-desafio[aria-pressed="true"] {
+  background: #e65100;
+  color: #fff;
+  animation: brilho-desafio 1.6s ease-in-out infinite;
+}
+@keyframes brilho-desafio {
+  0%, 100% { box-shadow: 0 5px 0 var(--borda), 0 0 0 0 rgba(255, 145, 0, 0.6); }
+  50% { box-shadow: 0 5px 0 var(--borda), 0 0 0 10px rgba(255, 145, 0, 0); }
+}
+.explica-desafio { margin: 0; font-size: 18px; font-weight: 700; max-width: 360px; }
+.prefase-desafio {
+  display: inline-block;
+  margin: 4px 0 0;
+  background: #e65100;
+  color: #fff;
+  font-weight: 800;
+  border-radius: 999px;
+  padding: 4px 16px;
+}
+.prefase-desafio[hidden] { display: none; }
+
+/* ---------- Obstáculos da fase ---------- */
+.prefase-obstaculos {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  margin: 6px 0;
+}
+.rotulo-obstaculos { margin: 0; font-size: 22px; font-weight: 800; }
+.lista-obstaculos {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  padding: 0;
+  margin: 0;
+}
+.lista-obstaculos li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #fff8e1;
+  border: 3px solid var(--borda);
+  border-radius: 14px;
+  padding: 2px 12px 2px 4px;
+  font-size: 19px;
+  font-weight: 700;
+}
+.lista-obstaculos img { width: 48px; height: 48px; }
 
 .lista-fases {
   display: grid;
@@ -593,6 +656,8 @@ body.ano-1 .quiz-pergunta { font-size: 40px; }
 .passo-figura .tecla { min-width: 60px; height: 60px; font-size: 32px; animation: none; }
 .passo-figura .tecla-espaco { min-width: 120px; font-size: 20px; }
 .passo-figura img { width: 46px; height: 46px; }
+#ajuda-obstaculos { flex-wrap: wrap; gap: 2px; }
+#ajuda-obstaculos img { width: 40px; height: 40px; }
 .figura-grande { font-family: var(--emoji); font-size: 52px; }
 
 /* ---------- Área do professor ---------- */

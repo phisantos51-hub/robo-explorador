@@ -34,6 +34,10 @@
       <h2 id="mapa-titulo"></h2>
       <button class="btn secundario" data-abrir-ajuda>❓ Como jogar</button>
     </header>
+    <div class="caixa-desafio">
+      <button class="btn botao-desafio" id="btn-desafio" aria-pressed="false">🔥 Modo Desafio: desligado</button>
+      <p class="explica-desafio">Para quem quer mais aventura: obstáculos mais rápidos e em maior número.</p>
+    </div>
     <p class="instrucao-mapa">Escolha uma fase:</p>
     <div id="lista-fases" class="lista-fases"></div>
   </section>
@@ -46,6 +50,13 @@
       <div class="prefase-missao">
         <img id="prefase-item" class="prefase-item" alt="">
         <p id="prefase-coletar"></p>
+      </div>
+
+      <p class="prefase-desafio" id="prefase-desafio" hidden>🔥 Modo Desafio ligado</p>
+
+      <div class="prefase-obstaculos" id="prefase-obstaculos">
+        <p class="rotulo-obstaculos">Cuidado com:</p>
+        <ul id="lista-obstaculos" class="lista-obstaculos"></ul>
       </div>
 
       <div class="controles-desenho" aria-label="Controles do jogo">
@@ -165,6 +176,10 @@
           <p>Passe pela <b>bandeira</b>. Se cair num buraco, o robô volta para ela.</p>
         </li>
         <li>
+          <div class="passo-figura" id="ajuda-obstaculos"></div>
+          <p>Cuidado com os <b>obstáculos</b>! Se tocar num deles, o robô tropeça e volta para a bandeira, sem perder nada.</p>
+        </li>
+        <li>
           <div class="passo-figura figura-grande">❔🖱️</div>
           <p>No fim, o <b>Portal da Pergunta</b>: clique na resposta certa.</p>
         </li>
@@ -219,6 +234,7 @@
 
   <script src="perguntas.js"></script>
   <script src="js/fases.js"></script>
+  <script src="js/obstaculos.js"></script>
   <script src="js/desenho.js"></script>
   <script src="js/jogo.js"></script>
 </body>

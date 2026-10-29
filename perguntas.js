@@ -126,6 +126,27 @@ var PERGUNTAS = {
       ],
       explicacao: 'SÃO CINCO: VISÃO, AUDIÇÃO, OLFATO, PALADAR E TATO.',
       imagemExplicacao: '👀 👂 👃 👅 ✋'
+    },
+    // Perguntas sobre os obstáculos do jardim
+    {
+      pergunta: 'COMO SABEMOS QUE A LAMA É MOLE E MOLHADA?',
+      imagem: '🟫💧',
+      respostas: [
+        { texto: 'TOCANDO', imagem: '✋', certa: true },
+        { texto: 'OUVINDO', imagem: '👂' }
+      ],
+      explicacao: 'A PELE SENTE SE ALGO É MOLE, DURO, MOLHADO OU SECO. É O TATO.',
+      imagemExplicacao: '✋ 🟫 💧'
+    },
+    {
+      pergunta: 'A ABELHA FAZ ZZZ. COMO SABEMOS QUE ELA ESTÁ PERTO?',
+      imagem: '🐝',
+      respostas: [
+        { texto: 'OUVINDO', imagem: '👂', certa: true },
+        { texto: 'CHEIRANDO', imagem: '👃' }
+      ],
+      explicacao: 'OUVIMOS O ZUMBIDO DA ABELHA COM AS ORELHAS. É A AUDIÇÃO.',
+      imagemExplicacao: '🐝 ➜ 👂'
     }
   ],
 
@@ -201,6 +222,17 @@ var PERGUNTAS = {
       ],
       explicacao: 'CADA PESSOA TEM A SUA ESCOVA. NÃO EMPRESTE A SUA!',
       imagemExplicacao: '🦷 👍'
+    },
+    // Pergunta sobre os obstáculos do rio
+    {
+      pergunta: 'O ROBÔ SE MOLHOU NO RIO E SUJOU NA LAMA. O QUE A GENTE FAZ DEPOIS?',
+      imagem: '💦🟫',
+      respostas: [
+        { texto: 'TOMA BANHO', imagem: '🛁', certa: true },
+        { texto: 'DORME SUJO', imagem: '🛏️' }
+      ],
+      explicacao: 'DEPOIS DE BRINCAR NA LAMA OU NO RIO, TOMAMOS BANHO E LAVAMOS AS MÃOS.',
+      imagemExplicacao: '🛁 🧼 🙌'
     }
   ],
 
@@ -265,6 +297,27 @@ var PERGUNTAS = {
       ],
       explicacao: 'QUANDO O SOL APARECE, O CÉU FICA CLARO. É DIA!',
       imagemExplicacao: '🌅 ☀️'
+    },
+    // Perguntas sobre os obstáculos do céu noturno
+    {
+      pergunta: 'O MORCEGO VOA DE DIA OU À NOITE?',
+      imagem: '🦇',
+      respostas: [
+        { texto: 'À NOITE', imagem: '🌙', certa: true },
+        { texto: 'DE DIA', imagem: '☀️' }
+      ],
+      explicacao: 'O MORCEGO DORME DE DIA E VOA À NOITE PARA PROCURAR ALIMENTO.',
+      imagemExplicacao: '🦇 🌙'
+    },
+    {
+      pergunta: 'QUANDO VEMOS AS ESTRELAS BRILHANDO NO CÉU?',
+      imagem: '✨',
+      respostas: [
+        { texto: 'À NOITE', imagem: '🌙', certa: true },
+        { texto: 'AO MEIO-DIA', imagem: '☀️' }
+      ],
+      explicacao: 'À NOITE O CÉU FICA ESCURO E AS ESTRELAS APARECEM.',
+      imagemExplicacao: '🌙 ⭐ ✨'
     }
   ],
 
@@ -327,6 +380,27 @@ var PERGUNTAS = {
       ],
       explicacao: 'A BORRACHA ESTICA E DEPOIS VOLTA AO NORMAL.',
       imagemExplicacao: '🎈 ↔️'
+    },
+    // Perguntas sobre os obstáculos da fazenda e do rio
+    {
+      pergunta: 'DE QUE É FEITA A CERCA DA FAZENDA?',
+      imagem: '🚜',
+      respostas: [
+        { texto: 'MADEIRA', imagem: '🌳', certa: true },
+        { texto: 'VIDRO', imagem: '🥛' }
+      ],
+      explicacao: 'A CERCA É FEITA DE MADEIRA, QUE VEM DAS ÁRVORES.',
+      imagemExplicacao: '🌳 ➜ 🚜'
+    },
+    {
+      pergunta: 'O QUE BOIA NA ÁGUA DO RIO?',
+      imagem: '🏞️',
+      respostas: [
+        { texto: 'CANOA DE MADEIRA', imagem: '🛶', certa: true },
+        { texto: 'CHAVE DE METAL', imagem: '🔑' }
+      ],
+      explicacao: 'A MADEIRA BOIA. POR ISSO OS TRONCOS BOIAM NO RIO. A CHAVE DE METAL AFUNDA.',
+      imagemExplicacao: '🛶 🌊'
     }
   ],
 
@@ -402,6 +476,18 @@ var PERGUNTAS = {
       ],
       explicacao: 'O Sol é uma estrela. Ele não é vivo, mas dá luz e calor aos seres vivos.',
       imagemExplicacao: '☀️ ➜ 🌻'
+    },
+    // Pergunta sobre o rio
+    {
+      pergunta: 'No rio, qual destes é um ser vivo?',
+      imagem: '🏞️',
+      respostas: [
+        { texto: 'Sapo', imagem: '🐸', certa: true },
+        { texto: 'Água', imagem: '💧' },
+        { texto: 'Correnteza', imagem: '🌊' }
+      ],
+      explicacao: 'O sapo nasce, cresce e se alimenta. A água e a correnteza não são vivas.',
+      imagemExplicacao: '🐸 📈'
     }
   ],
 
@@ -474,6 +560,27 @@ var PERGUNTAS = {
       ],
       explicacao: 'No solo a raiz encontra água. Na caixa fechada falta luz e terra.',
       imagemExplicacao: '🟫 💧 ☀️'
+    },
+    // Perguntas sobre os obstáculos do jardim
+    {
+      pergunta: 'Por que a abelha visita as flores?',
+      imagem: '🐝🌸',
+      respostas: [
+        { texto: 'Para pegar néctar e pólen', imagem: '🌼', certa: true },
+        { texto: 'Para dormir', imagem: '😴' }
+      ],
+      explicacao: 'A abelha pega néctar e pólen. Levando pólen de flor em flor, ela ajuda a formar frutos e sementes.',
+      imagemExplicacao: '🐝 ➜ 🌸 ➜ 🍎'
+    },
+    {
+      pergunta: 'Para que servem os espinhos da roseira?',
+      imagem: '🌹',
+      respostas: [
+        { texto: 'Proteger a planta', imagem: '🛡️', certa: true },
+        { texto: 'Dar perfume', imagem: '👃' }
+      ],
+      explicacao: 'Os espinhos protegem a roseira de animais que querem comer seus caules e folhas.',
+      imagemExplicacao: '🌹 🛡️'
     }
   ],
 
@@ -556,6 +663,17 @@ var PERGUNTAS = {
       ],
       explicacao: 'O macaco vive na floresta e sobe nas árvores para comer frutas.',
       imagemExplicacao: '🐒 🌳 🍌'
+    },
+    // Pergunta sobre os obstáculos da floresta
+    {
+      pergunta: 'Qual animal usa os cipós para se balançar na floresta?',
+      imagem: '🌳',
+      respostas: [
+        { texto: 'Macaco', imagem: '🐒', certa: true },
+        { texto: 'Peixe', imagem: '🐟' }
+      ],
+      explicacao: 'O macaco se segura nos cipós e nos galhos para andar de árvore em árvore.',
+      imagemExplicacao: '🐒 🌳'
     }
   ],
 
@@ -627,6 +745,17 @@ var PERGUNTAS = {
       ],
       explicacao: 'Quanto mais perto da luz, maior fica a sombra.',
       imagemExplicacao: '🔦🧸 ➜ ⬛'
+    },
+    // Pergunta sobre as plataformas de estrela
+    {
+      pergunta: 'As plataformas só aparecem quando a estrela brilha. Por quê?',
+      imagem: '⭐',
+      respostas: [
+        { texto: 'Sem luz não enxergamos', imagem: '💡', certa: true },
+        { texto: 'Os olhos dormem', imagem: '😴' }
+      ],
+      explicacao: 'Para ver, precisamos de luz. A luz bate na plataforma e chega aos nossos olhos.',
+      imagemExplicacao: '⭐ ➜ 🟨 ➜ 👀'
     }
   ],
 
@@ -702,6 +831,17 @@ var PERGUNTAS = {
       ],
       explicacao: 'Todo animal nasce, cresce, pode se reproduzir e morre. É o ciclo de vida.',
       imagemExplicacao: '🐣 ➜ 🐔 ➜ 🥚'
+    },
+    // Pergunta sobre os obstáculos da fazenda
+    {
+      pergunta: 'A galinha que corre na fazenda nasceu de...',
+      imagem: '🐔',
+      respostas: [
+        { texto: 'Um ovo', imagem: '🥚', certa: true },
+        { texto: 'Uma semente', imagem: '🌰' }
+      ],
+      explicacao: 'A galinha é uma ave: nasceu de um ovo, foi pintinho e cresceu.',
+      imagemExplicacao: '🥚 ➜ 🐣 ➜ 🐔'
     }
   ],
 
@@ -773,6 +913,27 @@ var PERGUNTAS = {
       ],
       explicacao: 'Quando falamos, as cordas vocais vibram. Por isso a garganta treme.',
       imagemExplicacao: '🗣️ 〰️'
+    },
+    // Perguntas sobre os obstáculos da floresta e da noite
+    {
+      pergunta: 'O galho quebrou: crec! Como esse som chega até nós?',
+      imagem: '🌳',
+      respostas: [
+        { texto: 'Pelo ar, até as orelhas', imagem: '👂', certa: true },
+        { texto: 'Pela luz', imagem: '💡' }
+      ],
+      explicacao: 'O som viaja pelo ar até as nossas orelhas.',
+      imagemExplicacao: '〰️ ➜ 👂'
+    },
+    {
+      pergunta: 'O morcego voa no escuro sem bater nas coisas. O que ele usa?',
+      imagem: '🦇',
+      respostas: [
+        { texto: 'O som (eco)', imagem: '🔊', certa: true },
+        { texto: 'Uma lanterna', imagem: '🔦' }
+      ],
+      explicacao: 'O morcego solta sons e escuta o eco que volta. Assim ele sabe onde estão as coisas.',
+      imagemExplicacao: '🦇 〰️ 👂'
     }
   ],
 
@@ -843,6 +1004,17 @@ var PERGUNTAS = {
       ],
       explicacao: 'Lixo no chão suja o solo e a água. Use a lixeira e separe o reciclável.',
       imagemExplicacao: '🗑️ ♻️'
+    },
+    // Pergunta sobre a lama do jardim
+    {
+      pergunta: 'A lama é feita de...',
+      imagem: '🟫',
+      respostas: [
+        { texto: 'Solo e água', imagem: '🟫💧', certa: true },
+        { texto: 'Areia e açúcar', imagem: '🏖️🍬' }
+      ],
+      explicacao: 'A lama é solo misturado com água. O solo argiloso segura a água e vira lama com facilidade.',
+      imagemExplicacao: '🟫 + 💧 = 🟫'
     }
   ],
 
@@ -916,6 +1088,17 @@ var PERGUNTAS = {
       ],
       explicacao: 'A maior parte da Terra é coberta de água. Por isso ela parece azul vista do espaço.',
       imagemExplicacao: '🌍 🌊'
+    },
+    // Pergunta sobre as pedrinhas de meteoro
+    {
+      pergunta: 'A "estrela cadente" é mesmo uma estrela?',
+      imagem: '🌠',
+      respostas: [
+        { texto: 'Não, é uma pedrinha do espaço', imagem: '☄️', certa: true },
+        { texto: 'Sim, é uma estrela caindo', imagem: '⭐' }
+      ],
+      explicacao: 'A estrela cadente é um meteoro: uma pedrinha do espaço que brilha ao entrar no ar da Terra.',
+      imagemExplicacao: '☄️ ➜ 🌍'
     }
   ]
 };

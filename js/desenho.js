@@ -295,8 +295,17 @@ var Desenho = (function () {
       if (d.tipo !== 'arvore' && d.x > x0 && d.x < x1) enfeite(ctx, d, t);
     });
 
+    // Água rasa nos trechos seguros do rio
+    if (a.agua) {
+      f.rasos.forEach(function (rs) {
+        if (rs.x + rs.w < x0 || rs.x > x1) return;
+        ctx.fillStyle = 'rgba(30, 136, 229, 0.75)';
+        ctx.fillRect(rs.x, rs.y - 26, rs.w, 26);
+      });
+    }
+
     f.caixas.forEach(function (c) {
-      if (c.x + c.w < x0 || c.x > x1) return;
+      if (c.aparencia || c.x + c.w < x0 || c.x > x1) return;
       ctx.fillStyle = '#c68642';
       ctx.fillRect(c.x, c.y, c.w, c.h);
       ctx.strokeStyle = '#7a4a1e'; ctx.lineWidth = 4;
@@ -310,6 +319,8 @@ var Desenho = (function () {
     });
 
     f.plataformas.forEach(function (p) {
+      // galhos, pedras, troncos boiando e estrelas são desenhados em obstaculos.js
+      if (p.galho || p.pedra || p.estrela || p.aparencia) return;
       if (p.x + p.w < x0 || p.x > x1) return;
       var movel = !!p.movel;
       ctx.fillStyle = movel ? '#ffca28' : '#a1662f';

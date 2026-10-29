@@ -19,7 +19,33 @@ Cada ano tem 5 fases: uma para cada tema e uma "Grande revisão" no final, com p
 | **2º ano** | Seres vivos e não vivos (rio) | Plantas: partes e o que precisam (jardim) | Animais: onde vivem, o que comem, como se locomovem (floresta) | Luz e sombra (céu noturno) |
 | **3º ano** | Ciclo de vida dos animais (fazenda) | Som, audição e visão (floresta) | Tipos de solo (jardim) | Terra, Sol e Lua (céu noturno) |
 
-**Dificuldade:** o 1º ano tem poucos buracos, todos pequenos, e as perguntas aparecem em LETRA MAIÚSCULA. No 2º ano há buracos um pouco maiores e pontes. No 3º ano há plataformas que se movem. Em nenhum ano existem inimigos ou "fim de jogo": se o robô cair num buraco, ele volta para a última bandeira.
+**Dificuldade:** o 1º ano tem poucos buracos, todos pequenos, e as perguntas aparecem em LETRA MAIÚSCULA. No 2º ano há buracos um pouco maiores, pontes e plataformas que se movem. No 3º ano há saltos mais longos. Em nenhum ano existe "fim de jogo": se o robô cair num buraco ou tocar num obstáculo, ele volta para a última bandeira.
+
+## Obstáculos
+
+Cada ambiente tem obstáculos ligados à natureza daquele lugar:
+
+| Ambiente | Obstáculos |
+| --- | --- |
+| Jardim | espinhos de roseira, abelhas que voam de um lado para o outro, poças de lama que deixam o robô mais lento |
+| Floresta | troncos que rolam, galhos que quebram pouco depois de pisar, cipós para se balançar sobre buracos |
+| Rio | pedras que afundam e voltam, troncos boiando que levam o robô, correnteza que empurra para trás |
+| Fazenda | cercas para pular, galinhas correndo, feno que cai do alto (com sombra no chão avisando) |
+| Céu noturno | plataformas que só aparecem quando a estrela acende, morcegos voando, pedrinhas de meteoro (com brilho no chão avisando) |
+
+- **Não há fim de jogo.** Ao tocar num obstáculo, o robô tropeça (ou se molha) com uma animação engraçada e volta para a última bandeira, sem perder os itens já coletados.
+- **Primeira vez é sempre sozinha.** Cada obstáculo aparece primeiro num trecho seguro, logo depois de uma bandeira, com uma placa **!** e um balão explicando o que ele faz. Quando o obstáculo atravessa um buraco, esse primeiro buraco é raso: quem cair só precisa subir de volta.
+- **1º ano:** apenas 2 obstáculos por fase, um de cada tipo, devagar e com uma seta piscando suavemente que mostra de onde ele vem.
+- **2º ano:** os 3 obstáculos do ambiente, repetidos ao longo da fase, e plataformas que se mexem.
+- **3º ano:** obstáculos combinados (por exemplo, abelha voando sobre espinhos), saltos mais longos e trechos em que é preciso esperar o momento certo.
+- **Bandeiras:** quanto mais difícil a fase, mais bandeiras de salvamento ela tem.
+- **Menos movimento:** se o computador estiver configurado para reduzir animações (opção de acessibilidade do Windows ou do navegador), os obstáculos ficam mais lentos e o robô não gira ao tropeçar.
+
+Algumas perguntas do portal falam dos obstáculos (por exemplo, "Por que a abelha visita as flores?"). Elas estão no fim de cada tema em `perguntas.js`.
+
+## Modo Desafio
+
+Na tela de escolha de fases há o botão **🔥 Modo Desafio**. Ligado, ele deixa os obstáculos mais rápidos e mais numerosos em qualquer ano (no 1º ano, aparecem também os obstáculos dos anos seguintes). O jogo lembra a escolha naquele computador. Para voltar ao normal, clique no botão de novo.
 
 ## Estrelas
 
@@ -57,6 +83,7 @@ index.html        telas do jogo
 perguntas.js      todas as perguntas (é aqui que se acrescentam perguntas)
 css/estilo.css    cores, tamanhos e botões
 js/fases.js       anos, temas de cada fase e montagem dos cenários
+js/obstaculos.js  obstáculos de cada ambiente, balões explicativos e Modo Desafio
 js/desenho.js     desenhos do robô, dos cenários e dos itens
 js/jogo.js        regras do jogo, portal, estrelas e área do professor
 sw.js             guarda os arquivos para funcionar sem internet

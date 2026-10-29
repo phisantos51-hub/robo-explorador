@@ -5,6 +5,7 @@
   'use strict';
 
   var CHAVE_PROGRESSO = 'roboExplorador.progresso.v1';
+  var CHAVE_DESAFIO = 'roboExplorador.desafio';
   var $ = function (id) { return document.getElementById(id); };
 
   /* ================= Progresso (salvo só neste navegador) ================= */
@@ -24,6 +25,16 @@
   }
   function estrelasDe(ano, i) { return progresso.estrelas[ano + '-' + i] || 0; }
   function faseLiberada(ano, i) { return progresso.liberarTudo || i === 0 || estrelasDe(ano, i - 1) > 0; }
+
+  /* ================= Modo Desafio (lembrado neste navegador) ================= */
+  var modoDesafio = false;
+  try { modoDesafio = localStorage.getItem(CHAVE_DESAFIO) === 'sim'; } catch (e) { /* ignora */ }
+
+  function atualizarBotaoDesafio() {
+    var b = document.getElementById('btn-desafio');
+    b.textContent = modoDesafio ? '🔥 Modo Desafio: ligado' : '🔥 Modo Desafio: desligado';
+    b.setAttribute('aria-pressed', modoDesafio ? 'true' : 'false');
+  }
 
   /* ================= Perguntas (de perguntas.js) ================= */
   var banco = {};
@@ -198,6 +209,11 @@
     $('prefase-titulo').textContent = f.titulo;
     $('prefase-item').src = Desenho.iconeItem(amb.item, 112);
     $('prefase-coletar').textContent = 'Pegue as ' + amb.nomeItens + '!';
+    $('prefase-desafio').hidden = !modoDesafio;
+    var tipos = Obstaculos.plano(anoAtual.ano, f.ambiente, modoDesafio).tipos;
+    $('lista-obstaculos').innerHTML = tipos.map(function (t) {
+      return '<li><img src="' + Obstaculos.icone(t, 96) + '" alt="">' + Obstaculos.CATALOGO[t].nome + '</li>';
+    }).join('');
     mostrarTela('tela-prefase');
     $('prefase-comecar').focus();
   }
@@ -221,16 +237,26 @@
 
   var jogo = null;
   var teclas = { esq: false, dir: false };
+
+  // Quem pediu ao computador menos movimento na tela (acessibilidade) tem obstáculos mais lentos e sem giros
+  var movimentoReduzido = false;
+  try { movimentoReduzido = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { /* ignora */ }
+
+  var MENSAGENS_OPS = {
+    tropecou: ['Opa, tropeçou! 🤭', 'Ops! Que tombo engraçado! 😄', 'Upa! Vamos de novo! 😅'],
+    molhou: ['Ops, molhou! 💦', 'Splash! O robô se molhou! 💧']
+  };
   var ultimoTempo = 0;
   var rodando = false;
 
   function novaPartida() {
     var faseInfo = anoAtual.fases[faseAtual];
     var amb = AMBIENTES[faseInfo.ambiente];
-    var f = construirFase(anoAtual.ano, faseAtual, amb.enfeites);
+    var f = construirFase(anoAtual.ano, faseAtual, amb.enfeites, { desafio: modoDesafio, calmo: movimentoReduzido });
     jogo = {
       info: faseInfo, ambiente: faseInfo.ambiente, tipoItem: amb.item, fase: f,
-      robo: { x: f.inicio.x, y: f.inicio.y - 60, w: 34, h: 60, vx: 0, vy: 0, noChao: false, dir: 1, coyote: 0, pedidoPulo: 0, sobre: null },
+      calmo: movimentoReduzido, ano1: anoAtual.ano === 1, ops: null,
+      robo: { x: f.inicio.x, y: f.inicio.y - 60, w: 34, h: 60, vx: 0, vy: 0, noChao: false, dir: 1, coyote: 0, pedidoPulo: 0, sobre: null, cipo: null, esperaCipo: 0 },
       salvamento: { x: f.inicio.x, y: f.inicio.y },
       cam: 0, t: 0, coletados: 0, estado: 'jogando',
       particulas: [], textos: [], piscar: 0,
@@ -238,7 +264,7 @@
       quiz: null, acertosPrimeira: 0, totalPerguntas: 0
     };
     teclas.esq = teclas.dir = false;
-    $('hud-titulo').textContent = 'Fase ' + (faseAtual + 1) + ': ' + faseInfo.titulo;
+    $('hud-titulo').textContent = (modoDesafio ? '🔥 ' : '') + 'Fase ' + (faseAtual + 1) + ': ' + faseInfo.titulo;
     $('hud-icone').src = Desenho.iconeItem(amb.item, 84);
     atualizarHud();
   }
@@ -304,14 +330,49 @@
       if (!p.movel) return;
       var m = p.movel;
       var antes = p.x;
-      p.x += m.vel * m.sentido * dt;
-      if (p.x > m.ate) { p.x = m.ate; m.sentido = -1; }
-      if (p.x < m.de) { p.x = m.de; m.sentido = 1; }
+      // para um pouquinho em cada margem, para dar tempo de subir e descer
+      if (m.parada > 0) m.parada -= dt;
+      else p.x += m.vel * m.sentido * dt;
+      if (p.x > m.ate) { p.x = m.ate; m.sentido = -1; m.parada = 0.9; }
+      if (p.x < m.de) { p.x = m.de; m.sentido = 1; m.parada = 0.9; }
       p.dx = p.x - antes;
     });
+    Obstaculos.mover(g, dt);
+
+    // Tropeçou ou se molhou: animação engraçada e volta para a bandeira
+    if (g.estado === 'ops') {
+      g.ops.t += dt;
+      if (g.ops.t > (g.calmo ? 1.1 : 0.9)) {
+        voltarParaBandeira();
+        g.estado = 'jogando';
+        g.ops = null;
+      }
+      atualizarEfeitos(dt);
+      return;
+    }
+
+    var ef = Obstaculos.efeitos(g);
+
+    // Pendurado no cipó: pular solta o robô
+    if (r.cipo) {
+      r.pedidoPulo -= dt;
+      if (g.estado === 'jogando' && r.pedidoPulo > 0) {
+        r.cipo = null;
+        r.esperaCipo = 0.4;
+        r.vy = -650;
+        r.vx = teclas.esq && !teclas.dir ? -VEL_ANDAR : VEL_ANDAR;
+        r.pedidoPulo = 0;
+        Som.tocar('pulo');
+      } else {
+        verificarObstaculos(dt);
+        coletar();
+        atualizarEfeitos(dt);
+        return;
+      }
+    }
 
     if (g.estado === 'jogando') {
-      var alvo = ((teclas.dir ? 1 : 0) - (teclas.esq ? 1 : 0)) * VEL_ANDAR;
+      var alvo = ((teclas.dir ? 1 : 0) - (teclas.esq ? 1 : 0)) * VEL_ANDAR * ef.vel;
       var dv = alvo - r.vx;
       var maxDv = ACELERACAO * dt;
       r.vx += Math.max(-maxDv, Math.min(maxDv, dv));
@@ -320,7 +381,7 @@
       r.coyote = r.noChao ? 0.1 : r.coyote - dt;
       r.pedidoPulo -= dt;
       if (r.pedidoPulo > 0 && r.coyote > 0) {
-        r.vy = -VEL_PULO;
+        r.vy = -VEL_PULO * ef.pulo;
         r.pedidoPulo = 0;
         r.coyote = 0;
         r.noChao = false;
@@ -340,14 +401,15 @@
     r.vy = Math.min(r.vy + GRAVIDADE * dt, 1100);
 
     if (r.sobre && r.sobre.dx) r.x += r.sobre.dx;
+    if (r.sobre && r.sobre.dy) r.y += r.sobre.dy;
 
-    // Movimento horizontal
-    r.x += r.vx * dt;
+    // Movimento horizontal (a correnteza empurra para trás)
+    r.x += (r.vx + ef.empurra) * dt;
     if (r.x < 0) r.x = 0;
     if (r.x > f.largura - r.w) r.x = f.largura - r.w;
     f.solidos.forEach(function (s) {
       if (sobrepoe(r, s)) {
-        if (r.vx > 0 || (r.sobre && r.sobre.dx > 0)) r.x = s.x - r.w;
+        if (r.vx + ef.empurra > 0 || (r.sobre && r.sobre.dx > 0)) r.x = s.x - r.w;
         else r.x = s.x + s.w;
         r.vx = 0;
       }
@@ -366,6 +428,7 @@
     });
     if (r.vy >= 0) {
       f.plataformas.forEach(function (p) {
+        if (p.solida === false) return;
         if (r.x + r.w > p.x + 2 && r.x < p.x + p.w - 2 && baseAntes <= p.y + 2 && r.y + r.h >= p.y) {
           r.y = p.y - r.h; r.vy = 0; r.noChao = true; r.sobre = p;
         }
@@ -374,17 +437,34 @@
 
     // Caiu no buraco: volta para a última bandeira
     if (r.y > ALTURA_JOGO + 120) {
-      r.x = g.salvamento.x;
-      r.y = g.salvamento.y - r.h;
-      r.vx = r.vy = 0;
-      g.piscar = 1.2;
-      g.cam = Math.max(0, r.x - LARGURA_JOGO * 0.35);
-      aviso('Ops! Vamos tentar de novo 🚩', 'atencao');
+      voltarParaBandeira();
+      aviso(AMBIENTES[g.ambiente].agua ? 'Ops, molhou! Vamos de novo 💦' : 'Ops! Vamos tentar de novo 🚩', 'atencao');
       Som.tocar('queda');
     }
     if (g.piscar > 0) g.piscar -= dt;
 
-    // Itens
+    verificarObstaculos(dt);
+
+    coletar();
+
+    // Chegou ao portal
+    if (g.estado === 'jogando' && r.x + r.w / 2 >= f.portal.x - 50 && r.noChao) {
+      g.estado = 'pergunta';
+      teclas.esq = teclas.dir = false;
+      setTimeout(abrirQuiz, 350);
+    }
+
+    if (g.estado === 'saindo' && g.saida > 1.6) {
+      g.estado = 'fim';
+      mostrarResultado();
+    }
+
+    atualizarEfeitos(dt);
+  }
+
+  // Itens e bandeiras (pontos de salvamento)
+  function coletar() {
+    var g = jogo, f = g.fase, r = g.robo;
     var caixaRobo = { x: r.x - 4, y: r.y - 6, w: r.w + 8, h: r.h + 6 };
     f.itens.forEach(function (it) {
       if (it.pego) return;
@@ -414,20 +494,36 @@
         }
       }
     });
+  }
 
-    // Chegou ao portal
-    if (g.estado === 'jogando' && r.x + r.w / 2 >= f.portal.x - 50 && r.noChao) {
-      g.estado = 'pergunta';
-      teclas.esq = teclas.dir = false;
-      setTimeout(abrirQuiz, 350);
+  function verificarObstaculos(dt) {
+    var g = jogo;
+    var tocou = Obstaculos.verificar(g, dt);
+    if (tocou && g.estado === 'jogando') {
+      var reacao = AMBIENTES[g.ambiente].agua && (tocou === 'pedra' || tocou === 'correnteza') ? 'molhou' : 'tropecou';
+      g.estado = 'ops';
+      g.ops = { tipo: tocou, reacao: reacao, t: 0 };
+      g.robo.cipo = null;
+      g.robo.vx = g.robo.vy = 0;
+      var lista = MENSAGENS_OPS[reacao];
+      aviso(lista[Math.floor(Math.random() * lista.length)], 'atencao');
+      Som.tocar('queda');
     }
+  }
 
-    if (g.estado === 'saindo' && g.saida > 1.6) {
-      g.estado = 'fim';
-      mostrarResultado();
-    }
+  function voltarParaBandeira() {
+    var g = jogo, r = g.robo;
+    r.x = g.salvamento.x;
+    r.y = g.salvamento.y - r.h;
+    r.vx = r.vy = 0;
+    r.cipo = null;
+    r.sobre = null;
+    g.piscar = 1.2;
+    g.cam = Math.max(0, r.x - LARGURA_JOGO * 0.35);
+  }
 
-    // Efeitos
+  function atualizarEfeitos(dt) {
+    var g = jogo, f = g.fase, r = g.robo;
     g.particulas = g.particulas.filter(function (p) {
       p.x += p.vx * dt; p.y += p.vy * dt; p.vy += 500 * dt; p.vida -= dt;
       return p.vida > 0;
@@ -446,6 +542,7 @@
     ctx.save();
     ctx.translate(-Math.round(g.cam), 0);
     Desenho.cenario(ctx, f, g.ambiente, g.cam, g.t);
+    Obstaculos.desenhar(ctx, g, g.calmo);
     f.bandeiras.forEach(function (b) { Desenho.bandeira(ctx, b, g.t); });
     Desenho.portal(ctx, f.portal, g.t, g.portalAberto);
     f.itens.forEach(function (it, i) {
@@ -459,7 +556,12 @@
       opcoesRobo.alpha = Math.max(0, 1 - progressoSaida);
     }
     var visivel = g.piscar <= 0 || Math.floor(g.piscar * 10) % 2 === 0;
-    if (visivel) Desenho.robo(ctx, r, g.t, opcoesRobo);
+    if (g.estado === 'ops') {
+      Obstaculos.desenharRoboOps(ctx, r, g.ops, g.t, g.calmo, function (o) { Desenho.robo(ctx, r, g.t, o); });
+    } else if (visivel) {
+      if (r.cipo) opcoesRobo = { noAr: true };
+      Desenho.robo(ctx, r, g.t, opcoesRobo);
+    }
 
     g.particulas.forEach(function (p) {
       ctx.globalAlpha = Math.max(0, p.vida * 2);
@@ -478,6 +580,7 @@
       ctx.fillText(tx.texto, tx.x, tx.y);
     });
     ctx.globalAlpha = 1;
+    Obstaculos.desenharPlacas(ctx, g, g.calmo, g.ano1);
     ctx.restore();
 
     // Seta indicando o caminho no começo
@@ -744,6 +847,9 @@
       $('ajuda-itens').innerHTML = ['semente', 'gota', 'folha', 'estrela'].map(function (t) {
         return '<img src="' + Desenho.iconeItem(t, 92) + '" alt="">';
       }).join('');
+      $('ajuda-obstaculos').innerHTML = ['abelha', 'tronco', 'galinha', 'morcego'].map(function (t) {
+        return '<img src="' + Obstaculos.icone(t, 80) + '" alt="">';
+      }).join('');
       abrirModal('modal-ajuda');
       $('ajuda-fechar').focus();
     });
@@ -762,6 +868,11 @@
     });
   }
 
+  $('btn-desafio').addEventListener('click', function () {
+    modoDesafio = !modoDesafio;
+    try { localStorage.setItem(CHAVE_DESAFIO, modoDesafio ? 'sim' : 'nao'); } catch (e) { /* ignora */ }
+    atualizarBotaoDesafio();
+  });
   $('mapa-voltar').addEventListener('click', function () { montarInicio(); mostrarTela('tela-inicio'); });
   $('prefase-voltar').addEventListener('click', function () { abrirMapa(anoAtual); });
   $('prefase-comecar').addEventListener('click', comecarFase);
@@ -841,6 +952,7 @@
   /* ================= Começo ================= */
   $('logo-robo').src = Desenho.iconeRobo(220);
   atualizarBotoesSom();
+  atualizarBotaoDesafio();
   montarInicio();
 
   // Guarda os arquivos para o jogo abrir mesmo sem internet
