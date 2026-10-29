@@ -2,7 +2,7 @@
  * Robô Explorador — guarda os arquivos do jogo no navegador para funcionar sem internet.
  * Com internet, sempre busca a versão mais nova (assim as perguntas novas aparecem).
  */
-var CACHE = 'robo-explorador-v2';
+var CACHE = 'robo-explorador-v3';
 var ARQUIVOS = [
   './',
   'index.html',

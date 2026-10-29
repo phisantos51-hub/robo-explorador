@@ -204,16 +204,17 @@ function construirFase(ano, indice, decoracoes, opcoes) {
   };
 
   /* ---------- Obstáculos (seguro = primeira vez, sozinho) ---------- */
-  function obstaculo(o) { o.aviso = ano === 1; f.obstaculos.push(o); return o; }
+  function obstaculo(o) { o.aviso = ano === 1; o.desafio = desafio; f.obstaculos.push(o); return o; }
 
   // Obstáculo que voa ou cai por cima de outro trecho (combinações)
   function sobrepor(tipo, xIni, xFim, base) {
     if (tipo === 'abelha') {
-      obstaculo({ tipo: 'abelha', de: xIni + 10, ate: xFim - 10, x: xFim - 10, sentido: -1, y: base - 118, vel: 55 * vel });
+      // a abelha descansa um pouco antes do trecho (atrás do robô), dando tempo de passar
+      obstaculo({ tipo: 'abelha', de: xIni - 40, ate: xFim - 10, x: xFim - 10, sentido: -1, y: base - 118, vel: 45 * vel, paradaEsquerda: 2.5 });
     } else if (tipo === 'morcego') {
-      obstaculo({ tipo: 'morcego', de: xIni + 10, ate: xFim - 10, x: xIni + 10, sentido: 1, yBase: base - 125, amp: 22, vel: 60 * vel, ritmo: vel });
+      obstaculo({ tipo: 'morcego', de: xIni - 40, ate: xFim - 10, x: xIni - 40, sentido: 1, yBase: base - 125, amp: 22, vel: 45 * vel, ritmo: vel, paradaEsquerda: 2.5 });
     } else if (tipo === 'feno' || tipo === 'meteoro') {
-      obstaculo({ tipo: tipo, x: (xIni + xFim) / 2, yChao: base, espera: Math.max(0.8, 1.7 / vel), atraso: 0.7 });
+      obstaculo({ tipo: tipo, x: (xIni + xFim) / 2, yChao: base, espera: Math.max(1.1, 2.2 / vel), atraso: 0.7 });
     }
   }
 
@@ -277,9 +278,9 @@ function construirFase(ano, indice, decoracoes, opcoes) {
       chao(1);
       var x0 = cx, L = 5;
       chao(L);
-      obstaculo({ tipo: 'feno', x: (x0 + L / 2) * TILE, yChao: topo(), espera: Math.max(0.8, 1.6 / vel), atraso: 0 });
+      obstaculo({ tipo: 'feno', x: (x0 + L / 2) * TILE, yChao: topo(), espera: Math.max(1.1, 2.2 / vel), atraso: 0 });
       if (!seguro && (ano === 3 || desafio)) {
-        obstaculo({ tipo: 'feno', x: (x0 + 1) * TILE, yChao: topo(), espera: Math.max(0.8, 1.6 / vel), atraso: 0.8 });
+        obstaculo({ tipo: 'feno', x: (x0 + 1) * TILE, yChao: topo(), espera: Math.max(1.1, 2.2 / vel), atraso: 0.4 }); // cai logo depois do outro: dá para passar pelos dois juntos
       }
       linhaDeItens(x0 + 1, 3, topo() - 44);
       if (sobre) sobrepor(sobre, x0 * TILE, (x0 + L) * TILE, topo());
@@ -289,7 +290,7 @@ function construirFase(ano, indice, decoracoes, opcoes) {
       chao(1);
       var x0 = cx, L = 6;
       chao(L);
-      obstaculo({ tipo: 'morcego', de: (x0 + 0.4) * TILE, ate: (x0 + L - 0.4) * TILE, x: (x0 + L - 0.4) * TILE, sentido: -1, yBase: topo() - 75, amp: 32, vel: 65 * vel, ritmo: vel });
+      obstaculo({ tipo: 'morcego', de: (x0 + 0.4) * TILE, ate: (x0 + L - 0.4) * TILE, x: (x0 + L - 0.4) * TILE, sentido: -1, yBase: topo() - 75, amp: 32, vel: 65 * vel, ritmo: vel, paradaEsquerda: 1.5 });
       linhaDeItens(x0 + 1, 4, topo() - 44);
       if (sobre) sobrepor(sobre, x0 * TILE, (x0 + L) * TILE, topo());
       chao(1);
@@ -298,9 +299,9 @@ function construirFase(ano, indice, decoracoes, opcoes) {
       chao(1);
       var x0 = cx, L = 5;
       chao(L);
-      obstaculo({ tipo: 'meteoro', x: (x0 + L / 2) * TILE, yChao: topo(), espera: Math.max(0.8, 1.6 / vel), atraso: 0 });
+      obstaculo({ tipo: 'meteoro', x: (x0 + L / 2) * TILE, yChao: topo(), espera: Math.max(1.1, 2.2 / vel), atraso: 0 });
       if (!seguro && (ano === 3 || desafio)) {
-        obstaculo({ tipo: 'meteoro', x: (x0 + 1) * TILE, yChao: topo(), espera: Math.max(0.8, 1.6 / vel), atraso: 1 });
+        obstaculo({ tipo: 'meteoro', x: (x0 + 1) * TILE, yChao: topo(), espera: Math.max(1.1, 2.2 / vel), atraso: 0.4 }); // cai logo depois do outro: dá para passar pelos dois juntos
       }
       linhaDeItens(x0 + 1, 3, topo() - 44);
       if (sobre) sobrepor(sobre, x0 * TILE, (x0 + L) * TILE, topo());

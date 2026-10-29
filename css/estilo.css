@@ -334,6 +334,7 @@ h1 {
   margin: 12px 0;
 }
 .controle p { margin: 10px 0 0; font-size: 30px; font-weight: 800; }
+.controle .dica-pulo-duplo { margin-top: 2px; font-size: 19px; color: #1565c0; }
 .teclas { display: flex; align-items: center; justify-content: center; gap: 10px; }
 .ou { font-size: 22px; font-weight: 700; }
 

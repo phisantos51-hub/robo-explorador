@@ -39,6 +39,8 @@ Cada ambiente tem obstáculos ligados à natureza daquele lugar:
 - **2º ano:** os 3 obstáculos do ambiente, repetidos ao longo da fase, e plataformas que se mexem.
 - **3º ano:** obstáculos combinados (por exemplo, abelha voando sobre espinhos), saltos mais longos e trechos em que é preciso esperar o momento certo.
 - **Bandeiras:** quanto mais difícil a fase, mais bandeiras de salvamento ela tem.
+- **Abelhas e morcegos** param para descansar (aparece "z z") no começo do trecho: é a hora de passar. Fora do Modo Desafio, eles também não atrapalham quando estão indo embora (voando para a direita).
+- **Pulo duplo:** apertar o pulo de novo no ar faz o robô subir mais, o que ajuda a passar por cima de abelhas e morcegos.
 - **Menos movimento:** se o computador estiver configurado para reduzir animações (opção de acessibilidade do Windows ou do navegador), os obstáculos ficam mais lentos e o robô não gira ao tropeçar.
 
 Algumas perguntas do portal falam dos obstáculos (por exemplo, "Por que a abelha visita as flores?"). Elas estão no fim de cada tema em `perguntas.js`.
@@ -60,7 +62,7 @@ Se errar uma pergunta, aparece uma explicação curta com desenhos e a criança 
 ## Controles
 
 - **Setas ← →**: andar
-- **Seta ↑** ou **barra de espaço**: pular
+- **Seta ↑** ou **barra de espaço**: pular. Apertando de novo no ar, o robô dá um **pulo duplo** (mais alto).
 - **P** ou o botão **⏸ Pausar**: pausar (o jogo também pausa sozinho se a janela perder o foco)
 - **Mouse**: responder às perguntas
 

@@ -17,7 +17,7 @@ var Obstaculos = (function () {
    */
   var CATALOGO = {
     espinhos: { nome: 'Espinhos da roseira', reacao: 'tropecou', balao: 'Espinhos da roseira! Pule por cima deles.' },
-    abelha: { nome: 'Abelha', reacao: 'tropecou', aereo: true, balao: 'A abelha voa de um lado para o outro. Pule por cima dela!' },
+    abelha: { nome: 'Abelha', reacao: 'tropecou', aereo: true, balao: 'A abelha voa de um lado para o outro. Pule por cima dela, ou passe quando ela parar para descansar!' },
     lama: { nome: 'Poça de lama', balao: 'Lama! O robô fica mais lento. Continue andando.' },
     tronco: { nome: 'Tronco rolando', reacao: 'tropecou', balao: 'Troncos rolando! Pule quando um tronco chegar perto.' },
     galho: { nome: 'Galho fraco', vao: true, balao: 'Galho fraco! Ele quebra logo depois que você pisa. Passe rápido!' },
@@ -29,7 +29,7 @@ var Obstaculos = (function () {
     galinha: { nome: 'Galinha', reacao: 'tropecou', balao: 'Galinha correndo! Pule por cima dela.' },
     feno: { nome: 'Feno caindo', reacao: 'tropecou', queda: true, balao: 'Feno caindo! Olhe a sombra no chão e passe depois que ele cair.' },
     estrela: { nome: 'Plataformas de estrela', vao: true, balao: 'Plataformas de estrela! Só dá para pisar quando estão acesas.' },
-    morcego: { nome: 'Morcego', reacao: 'tropecou', aereo: true, balao: 'Morcego voando! Passe quando ele subir, ou pule por cima.' },
+    morcego: { nome: 'Morcego', reacao: 'tropecou', aereo: true, balao: 'Morcego voando! Passe quando ele subir ou quando parar para descansar.' },
     meteoro: { nome: 'Pedrinhas de meteoro', reacao: 'tropecou', queda: true, balao: 'Pedrinhas de meteoro! Olhe o brilho no chão e espere cair.' }
   };
 
@@ -68,16 +68,19 @@ var Obstaculos = (function () {
   function podeSobrepor(tipo, base) {
     var c = CATALOGO[tipo];
     if (tipo === base || !(c.aereo || c.queda)) return false;
-    // coisas que caem precisam de chão embaixo
-    if (c.queda && CATALOGO[base].vao) return false;
+    // coisas que caem precisam de chão embaixo, e não caem logo depois de uma cerca (onde o robô aterrissa)
+    if (c.queda && (CATALOGO[base].vao || base === 'cerca')) return false;
     return true;
   }
 
   /* ================= Movimento ================= */
   function patrulhar(o, dt) {
+    // paradaEsquerda: o bicho espera um pouco no lado de onde o robô chega (por cima dele),
+    // dando tempo para o robô passar
+    if (o.parado > 0) { o.parado -= dt; return; }
     o.x += o.vel * o.sentido * dt;
     if (o.x > o.ate) { o.x = o.ate; o.sentido = -1; }
-    if (o.x < o.de) { o.x = o.de; o.sentido = 1; }
+    if (o.x < o.de) { o.x = o.de; o.sentido = 1; o.parado = o.paradaEsquerda || 0; }
   }
 
   // Ciclo das coisas que caem: espera (sombra) -> queda -> no chão -> some
@@ -178,7 +181,15 @@ var Obstaculos = (function () {
     return ef;
   }
 
+  // Abelha e morcego descansando (e logo que acordam) não atrapalham: é a hora de passar
+  function descansando(o) {
+    if (o.paradaEsquerda > 0 && (o.parado > 0 || (o.sentido > 0 && o.x < o.de + 30))) return true;
+    // Fora do Modo Desafio, abelha e morcego indo embora (para a direita) não atrapalham quem vem atrás
+    return !o.desafio && (o.tipo === 'abelha' || o.tipo === 'morcego') && o.sentido > 0;
+  }
+
   function caixaPerigo(o, t) {
+    if (descansando(o)) return null;
     switch (o.tipo) {
       case 'espinhos': return { x: o.x, y: o.y - 14, w: o.w, h: 14 };
       case 'abelha': return { x: o.x - 13, y: o.y - 10 + Math.sin(o.t * 6) * 4, w: 26, h: 20 };
@@ -202,7 +213,8 @@ var Obstaculos = (function () {
   function posicaoQueda(o, p) {
     var e = p * p;
     if (o.tipo === 'feno') return { x: o.x, y: -40 + (o.yChao + 40) * e };
-    return { x: o.x - 140 * (1 - e), y: -30 + (o.yChao - 12 + 30) * e };
+    // o meteoro vem do alto à direita, para não atingir quem está esperando à esquerda
+    return { x: o.x + 140 * (1 - e), y: -30 + (o.yChao - 12 + 30) * e };
   }
 
   function sobrepoe(a, b) {
@@ -339,11 +351,11 @@ var Obstaculos = (function () {
   }
 
   function desenharMeteoro(ctx, x, y, t) {
-    var g = ctx.createLinearGradient(x - 50, y - 36, x, y);
+    var g = ctx.createLinearGradient(x + 50, y - 36, x, y);
     g.addColorStop(0, 'rgba(255,213,79,0)');
     g.addColorStop(1, 'rgba(255,213,79,0.9)');
     ctx.strokeStyle = g; ctx.lineWidth = 9; ctx.lineCap = 'round';
-    ctx.beginPath(); ctx.moveTo(x - 50, y - 36); ctx.lineTo(x, y); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x + 50, y - 36); ctx.lineTo(x, y); ctx.stroke();
     ctx.lineCap = 'butt';
     ctx.fillStyle = '#ff8a65'; ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2.5;
     ctx.beginPath(); ctx.arc(x, y, 11, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
@@ -500,6 +512,16 @@ var Obstaculos = (function () {
     }
   }
 
+  /* "Zzz" em cima do bicho que está descansando */
+  function zzz(ctx, o, y, t) {
+    if (!(o.parado > 0)) return;
+    ctx.font = 'bold 18px Verdana, Arial, sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.lineWidth = 4; ctx.strokeStyle = '#ffffff'; ctx.fillStyle = '#1565c0';
+    var sobe = (t * 12) % 10;
+    ctx.strokeText('z z', o.x + 14, y - sobe); ctx.fillText('z z', o.x + 14, y - sobe);
+  }
+
   /* Seta que pisca devagar mostrando por onde o obstáculo vem */
   function seta(ctx, x, y, angulo, t, calmo) {
     ctx.save();
@@ -530,9 +552,9 @@ var Obstaculos = (function () {
         case 'espinhos': desenharEspinhos(ctx, o); break;
         case 'lama': desenharLama(ctx, o, t); break;
         case 'correnteza': desenharCorrenteza(ctx, o, t, calmo); break;
-        case 'abelha': desenharAbelha(ctx, o.x, o.y + Math.sin(o.t * 6) * 4, o.sentido, t); break;
+        case 'abelha': desenharAbelha(ctx, o.x, o.y + Math.sin(o.t * 6) * 4, o.sentido, t); zzz(ctx, o, o.y - 20, t); break;
         case 'galinha': desenharGalinha(ctx, o.x, o.y, o.sentido, t); break;
-        case 'morcego': desenharMorcego(ctx, o.x, yMorcego(o), o.sentido, t); break;
+        case 'morcego': desenharMorcego(ctx, o.x, yMorcego(o), o.sentido, t); zzz(ctx, o, yMorcego(o) - 22, t); break;
         case 'tronco':
           if (o.espera <= 0) desenharTronco(ctx, o.x, o.y, o.raio, o.giro);
           break;
@@ -649,7 +671,7 @@ var Obstaculos = (function () {
       case 'feno': desenharFeno(ctx, 0, 18); break;
       case 'estrela': desenharPlataformaEspecial(ctx, { x: -30, y: -9, w: 60, h: 18, solida: true, estrela: {} }, 0, true); break;
       case 'morcego': desenharMorcego(ctx, 0, 0, 1, 0.3); break;
-      case 'meteoro': desenharMeteoro(ctx, 8, 6, 0); break;
+      case 'meteoro': desenharMeteoro(ctx, -8, 6, 0); break;
     }
     ctx.restore();
   }

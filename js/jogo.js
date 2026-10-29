@@ -256,7 +256,7 @@
     jogo = {
       info: faseInfo, ambiente: faseInfo.ambiente, tipoItem: amb.item, fase: f,
       calmo: movimentoReduzido, ano1: anoAtual.ano === 1, ops: null,
-      robo: { x: f.inicio.x, y: f.inicio.y - 60, w: 34, h: 60, vx: 0, vy: 0, noChao: false, dir: 1, coyote: 0, pedidoPulo: 0, sobre: null, cipo: null, esperaCipo: 0 },
+      robo: { x: f.inicio.x, y: f.inicio.y - 60, w: 34, h: 60, vx: 0, vy: 0, noChao: false, dir: 1, coyote: 0, pedidoPulo: 0, sobre: null, cipo: null, esperaCipo: 0, pulosNoAr: 0 },
       salvamento: { x: f.inicio.x, y: f.inicio.y },
       cam: 0, t: 0, coletados: 0, estado: 'jogando',
       particulas: [], textos: [], piscar: 0,
@@ -362,6 +362,7 @@
         r.vy = -650;
         r.vx = teclas.esq && !teclas.dir ? -VEL_ANDAR : VEL_ANDAR;
         r.pedidoPulo = 0;
+        r.pulosNoAr = 0;
         Som.tocar('pulo');
       } else {
         verificarObstaculos(dt);
@@ -379,7 +380,18 @@
       if (alvo !== 0) r.dir = alvo > 0 ? 1 : -1;
 
       r.coyote = r.noChao ? 0.1 : r.coyote - dt;
+      if (r.noChao) r.pulosNoAr = 0;
       r.pedidoPulo -= dt;
+      // Pulo duplo: apertar de novo no ar dá mais um pulo
+      if (r.pedidoPulo > 0 && r.coyote <= 0 && !r.noChao && r.pulosNoAr < 1) {
+        r.vy = -VEL_PULO * 0.9;
+        r.pedidoPulo = 0;
+        r.pulosNoAr = 1;
+        Som.tocar('pulo');
+        for (var k = 0; k < 8; k++) {
+          g.particulas.push({ x: r.x + r.w / 2 + (k - 3.5) * 5, y: r.y + r.h, vx: (k - 3.5) * 30, vy: 60 + Math.random() * 40, vida: 0.35, cor: '#ffffff' });
+        }
+      }
       if (r.pedidoPulo > 0 && r.coyote > 0) {
         r.vy = -VEL_PULO * ef.pulo;
         r.pedidoPulo = 0;
